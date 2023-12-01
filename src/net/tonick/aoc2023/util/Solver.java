@@ -7,7 +7,17 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public abstract class Solver {
-    public static Result solve(Supplier<List<String>> inputData, Function<List<String>, Object> algorithm, Optional<Object> expectedResult, Consumer<Object> writer) {
+    public static Result solve(Supplier<List<String>> inputData,
+                               Function<List<String>, Object> algorithm,
+                               Optional<Object> expectedResult
+    ) {
+        return solve(inputData, algorithm, expectedResult, System.out::println);
+    }
+
+    public static Result solve(Supplier<List<String>> inputData,
+                               Function<List<String>, Object> algorithm,
+                               Optional<Object> expectedResult,
+                               Consumer<Object> writer) {
         Result result = new Result(
                 expectedResult.orElse(null),
                 algorithm.apply(inputData.get()),
