@@ -70,6 +70,13 @@ public class Main extends Solver {
                 .collect(Collectors.toList());
     }
 
+    private static Function<String, List<Integer>> indicesOfAll2(String needle) {
+        return haystack -> IntStream.range(0, haystack.length() - needle.length() + 1)
+                .filter(index -> haystack.startsWith(needle, index))
+                .boxed()
+                .collect(Collectors.toList());
+    }
+
     /**
      * Create an extractor with a filter that only allows digits from NUMBERS
      */
