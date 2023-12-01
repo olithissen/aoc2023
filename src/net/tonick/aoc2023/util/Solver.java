@@ -1,5 +1,7 @@
 package net.tonick.aoc2023.util;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -18,17 +20,23 @@ public abstract class Solver {
                                Function<List<String>, Object> algorithm,
                                Optional<Object> expectedResult,
                                Consumer<Object> writer) {
+
+        var start = Instant.now();
+        Object algorithmResult = algorithm.apply(inputData.get());
+        var executionTime = Duration.between(start, Instant.now()).toNanos() * 0.000001;
+
+
         Result result = new Result(
                 expectedResult.orElse(null),
-                algorithm.apply(inputData.get()),
-                expectedResult.map(algorithm.apply(inputData.get())::equals).orElse(true)
-        );
+                algorithmResult,
+                expectedResult.map(algorithmResult::equals).orElse(true),
+                executionTime);
 
         writer.accept(result);
 
         return result;
     }
 
-    public record Result(Object expected, Object actual, boolean success) {
+    public record Result(Object expected, Object actual, boolean success, double executionTime) {
     }
 }
