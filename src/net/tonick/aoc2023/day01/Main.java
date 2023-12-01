@@ -3,12 +3,10 @@ package net.tonick.aoc2023.day01;
 import net.tonick.aoc2023.util.InputFile;
 import net.tonick.aoc2023.util.Solver;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiFunction;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Main extends Solver {
     public static final Map<String, Integer> NUMBERS = Map.ofEntries(
@@ -31,43 +29,11 @@ public class Main extends Solver {
             Map.entry("nine", 9),
             Map.entry("9", 9)
     );
-
-    BiFunction<String, String, List<Integer>> allIndicesOf = (haystack, needle) -> {
-        List<Integer> result = new ArrayList<>();
-
-        int index = 0;
-        do {
-            index = haystack.indexOf(needle, index);
-            if (index >= 0) {
-                result.add(index);
-                index++;
-            } else {
-                break;
-            }
-        } while (true);
-
-        return result;
-    };
-    Function<String, Integer> extractByDigitsAndNumberWords = s -> {
-
-        var containedNumbers = NUMBERS.entrySet().stream()
-                .flatMap(n -> allIndicesOf.apply(s, n.getKey()).stream().map(i -> new Locator(
-                        n.getKey(),
-                        n.getValue(),
-                        i
-                )))
-                .filter(l -> l.position >= 0)
-                .sorted(Comparator.comparingInt(o -> o.position))
-                .toList();
-
-        return containedNumbers.getFirst().value() * 10 + containedNumbers.getLast().value();
-    };
-    Function<String, Integer> extractOnlyByDigits = s -> {
-
+    static Function<String, Integer> extractOnlyByDigits = s -> {
         var containedNumbers = NUMBERS.entrySet().stream()
                 .filter(n -> n.getKey().matches("\\d"))
-                .flatMap(n -> allIndicesOf.apply(s, n.getKey()).stream()
-                        .map(i -> new Locator(
+                .flatMap(n -> indicesOfAll(s, n.getKey()).stream()
+                        .map(i -> new Location(
                                 n.getKey(),
                                 n.getValue(),
                                 i
@@ -79,40 +45,66 @@ public class Main extends Solver {
         return containedNumbers.getFirst().value() * 10 + containedNumbers.getLast().value();
     };
 
+    static Function<String, Integer> extractByDigitsAndNumberWords = s -> {
+        var containedNumbers = NUMBERS.entrySet().stream()
+                .flatMap(n -> indicesOfAll(s, n.getKey()).stream()
+                        .map(i -> new Location(
+                                n.getKey(),
+                                n.getValue(),
+                                i
+                        )))
+                .filter(l -> l.position >= 0)
+                .sorted(Comparator.comparingInt(o -> o.position))
+                .toList();
+
+        return containedNumbers.getFirst().value() * 10 + containedNumbers.getLast().value();
+    };
+    private static final Function<List<String>, Object> solution1 = input -> input.stream()
+            .map(extractOnlyByDigits)
+            .mapToInt(Integer::intValue)
+            .sum();
+    private static final Function<List<String>, Object> solution2 = input -> input.stream()
+            .map(extractByDigitsAndNumberWords)
+            .mapToInt(Integer::intValue)
+            .sum();
+
     public static void main(String... args) {
-        var m = new Main();
+        Solver.solve(
+                InputFile.of(Main.class, "sample.txt"),
+                solution1,
+                Optional.of(142),
+                System.out::println
+        );
 
-        var r = m.solution1("sample.txt");
-        System.out.println(r);
-        var r2 = m.solution1("input.txt");
-        System.out.println(r2);
+        Solver.solve(
+                InputFile.of(Main.class, "input.txt"),
+                solution1,
+                Optional.of(54159),
+                System.out::println
+        );
 
-        var r3 = m.solution2("sample2.txt");
-        System.out.println(r3);
-        var r4 = m.solution2("input.txt");
-        System.out.println(r4);
+        Solver.solve(
+                InputFile.of(Main.class, "sample2.txt"),
+                solution2,
+                Optional.of(281),
+                System.out::println
+        );
+
+        Solver.solve(
+                InputFile.of(Main.class, "input.txt"),
+                solution2,
+                Optional.of(53866),
+                System.out::println
+        );
     }
 
-    @Override
-    public Object solution1(String file) {
-        var x = InputFile.of(file).readAllLines();
-        var r = x.stream()
-                .map(extractOnlyByDigits)
-                .mapToInt(Integer::intValue)
-                .sum();
-        return r;
+    private static List<Integer> indicesOfAll(String haystack, String needle) {
+        return IntStream.range(0, haystack.length() - needle.length() + 1)
+                .filter(index -> haystack.startsWith(needle, index))
+                .boxed()
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public Object solution2(String file) {
-        var x = InputFile.of(file).readAllLines();
-        var r = x.stream()
-                .map(extractByDigitsAndNumberWords)
-                .mapToInt(Integer::intValue)
-                .sum();
-        return r;
-    }
-
-    record Locator(String name, Integer value, Integer position) {
+    record Location(String name, Integer value, Integer position) {
     }
 }
