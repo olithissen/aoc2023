@@ -11,7 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class Main extends Solver {
+public class Main implements Runnable {
     private static final Map<String, Integer> NUMBERS = Map.ofEntries(
             Map.entry("one", 1),
             Map.entry("1", 1),
@@ -104,6 +104,11 @@ public class Main extends Solver {
             .sum();
 
     public static void main(String... args) {
+        new Main().run();
+    }
+
+    @Override
+    public void run() {
         Solver.solve(
                 InputFile.of(Main.class, "sample.txt"),
                 solution1,
