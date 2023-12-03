@@ -99,7 +99,7 @@ public class Main implements Runnable {
         Solver.solve(
                 InputFile.of(Main.class, "input.txt"),
                 solution2,
-                Optional.empty()
+                Optional.of(79026871)
         );
     }
 }
