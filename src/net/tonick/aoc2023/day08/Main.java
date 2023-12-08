@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.LongBinaryOperator;
+import java.util.function.ToLongFunction;
 import java.util.stream.Collectors;
 
 public class Main implements Runnable {
@@ -30,21 +31,23 @@ public class Main implements Runnable {
                     .filter(k -> k.getKey().endsWith(start))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            return startPositions.keySet().stream()
-                    .mapToLong(k -> {
-                        var stepCounter = 0;
-                        var currentPosition = lookup.get(k);
-                        do {
-                            var posInLoop = stepCounter % loop.length();
-                            String directionChooser = loop.substring(posInLoop, posInLoop + 1);
-                            currentPosition = directionChooser.equals("L")
-                                    ? lookup.get(currentPosition.left)
-                                    : lookup.get(currentPosition.right);
-                            stepCounter++;
-                        } while (!currentPosition.from.endsWith(end));
+            ToLongFunction<Direction> numberOfSteps = k -> {
+                var stepCounter = 0;
+                var currentPosition = lookup.get(k.from);
+                do {
+                    var posInLoop = stepCounter % loop.length();
+                    String directionChooser = loop.substring(posInLoop, posInLoop + 1);
+                    currentPosition = directionChooser.equals("L")
+                            ? lookup.get(currentPosition.left)
+                            : lookup.get(currentPosition.right);
+                    stepCounter++;
+                } while (!currentPosition.from.endsWith(end));
 
-                        return stepCounter;
-                    })
+                return stepCounter;
+            };
+
+            return startPositions.values().stream()
+                    .mapToLong(numberOfSteps)
                     .reduce(1, leastCommonMultiple);
         };
     }
@@ -59,11 +62,11 @@ public class Main implements Runnable {
 
     @Override
     public void run() {
-        Solver.solve(InputFile.of(Main.class, "sample.txt"), solution1, Optional.of(2));
+        Solver.solve(InputFile.of(Main.class, "sample.txt"), solution1, Optional.of(2L));
 
-        Solver.solve(InputFile.of(Main.class, "sample2.txt"), solution1, Optional.of(6));
+        Solver.solve(InputFile.of(Main.class, "sample2.txt"), solution1, Optional.of(6L));
 
-        Solver.solve(InputFile.of(Main.class, "input.txt"), solution1, Optional.of(19951));
+        Solver.solve(InputFile.of(Main.class, "input.txt"), solution1, Optional.of(19951L));
 
         Solver.solve(InputFile.of(Main.class, "sample3.txt"), solution2, Optional.of(6L));
 

@@ -57,14 +57,14 @@ public class Main implements Runnable {
      */
     private static final Function<List<String>, Object> solution1 = input -> {
         var races = getRacesSplit.apply(input);
-        return races.stream().map(distances).mapToInt(List::size).reduce(product);
+        return races.stream().map(distances).mapToInt(List::size).reduce(product).getAsInt();
     };
     /**
      * Solution 2
      */
     private static final Function<List<String>, Object> solution2 = input -> {
         var races = getRacesJoined.apply(input);
-        return races.stream().map(distances).mapToInt(List::size).reduce(product);
+        return races.stream().map(distances).mapToInt(List::size).reduce(product).getAsInt();
     };
 
     /**
