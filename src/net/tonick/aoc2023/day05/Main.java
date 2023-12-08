@@ -15,7 +15,10 @@ import java.util.stream.LongStream;
 public class Main implements Runnable {
     private static final Function<String, List<Long>> seedExtractor = string -> {
         String[] split = string.split(":");
-        List<Long> list = Arrays.stream(split[1].split(" ")).filter(s -> !s.isEmpty()).map(Long::parseLong).toList();
+        List<Long> list = Arrays.stream(split[1].split(" "))
+                .filter(s -> !s.isEmpty())
+                .map(Long::parseLong)
+                .toList();
         return list;
     };
 
@@ -36,10 +39,14 @@ public class Main implements Runnable {
     };
     private static final Function<String, LookupMap> mapExtractor = string -> {
         String[] split = string.split(":");
-        List<MapEntry> mapEntries = Arrays.stream(split[1].split("\n")).filter(s -> !s.isEmpty()).map(line -> {
-            String[] entries = line.split(" ");
-            return new MapEntry(Long.parseLong(entries[0]), Long.parseLong(entries[1]), Long.parseLong(entries[2]));
-        }).toList();
+        List<MapEntry> mapEntries = Arrays.stream(split[1].split("\n"))
+                .filter(s -> !s.isEmpty())
+                .map(line -> {
+                    String[] entries = line.split(" ");
+                    return new MapEntry(
+                            Long.parseLong(entries[0]), Long.parseLong(entries[1]), Long.parseLong(entries[2]));
+                })
+                .toList();
 
         Direction direction = directionExtractor.apply(split[0]);
 
@@ -50,13 +57,16 @@ public class Main implements Runnable {
         String[] split = collect.split("\n\n");
 
         var seeds = rangedSeedExtractor.apply(split[0]);
-        Map<Direction, LookupMap> lookup = Arrays.stream(split, 1, split.length).map(mapExtractor)
+        Map<Direction, LookupMap> lookup = Arrays.stream(split, 1, split.length)
+                .map(mapExtractor)
                 .collect(Collectors.toMap(LookupMap::direction, Function.identity()));
 
         var result = LongStream.iterate(0, i -> i + 1)
                 .map(location -> {
                     Long unwalked = unwalk(lookup, "location", location);
-                    Optional<SeedRange> first = seeds.stream().filter(s -> s.isInSeedRange(unwalked)).findFirst();
+                    Optional<SeedRange> first = seeds.stream()
+                            .filter(s -> s.isInSeedRange(unwalked))
+                            .findFirst();
                     return first.isPresent() ? location : 0;
                 })
                 .filter(l -> l > 0)
@@ -70,7 +80,9 @@ public class Main implements Runnable {
         String[] split = collect.split("\n\n");
 
         var seeds = rangedSeedExtractor.apply(split[0]);
-        Map<Direction, LookupMap> lookup = Arrays.stream(split, 1, split.length).map(mapExtractor).collect(Collectors.toMap(LookupMap::direction, Function.identity()));
+        Map<Direction, LookupMap> lookup = Arrays.stream(split, 1, split.length)
+                .map(mapExtractor)
+                .collect(Collectors.toMap(LookupMap::direction, Function.identity()));
 
         var result = seeds.stream()
                 .flatMapToLong(s -> LongStream.range(s.from, s.from + s.range()))
@@ -85,15 +97,22 @@ public class Main implements Runnable {
         String[] split = collect.split("\n\n");
 
         var seeds = seedExtractor.apply(split[0]);
-        Map<Direction, LookupMap> lookup = Arrays.stream(split, 1, split.length).map(mapExtractor).collect(Collectors.toMap(LookupMap::direction, Function.identity()));
+        Map<Direction, LookupMap> lookup = Arrays.stream(split, 1, split.length)
+                .map(mapExtractor)
+                .collect(Collectors.toMap(LookupMap::direction, Function.identity()));
 
-        var result = seeds.stream().map(seed -> walk(lookup, "seed", seed)).mapToLong(x -> x).min();
+        var result = seeds.stream()
+                .map(seed -> walk(lookup, "seed", seed))
+                .mapToLong(x -> x)
+                .min();
 
         return result.getAsLong();
     };
 
     private static Long walk(Map<Direction, LookupMap> lookup, String from, Long value) {
-        Optional<LookupMap> lookupMapO = lookup.values().stream().filter(v -> v.direction.from.equals(from)).findFirst();
+        Optional<LookupMap> lookupMapO = lookup.values().stream()
+                .filter(v -> v.direction.from.equals(from))
+                .findFirst();
         var lookupMap = lookupMapO.get();
         if (lookupMap.direction.to.equals("location")) {
             return lookupMap.map(value);
@@ -102,7 +121,8 @@ public class Main implements Runnable {
     }
 
     private static Long unwalk(Map<Direction, LookupMap> lookup, String to, Long value) {
-        Optional<LookupMap> lookupMapO = lookup.values().stream().filter(v -> v.direction.to.equals(to)).findFirst();
+        Optional<LookupMap> lookupMapO =
+                lookup.values().stream().filter(v -> v.direction.to.equals(to)).findFirst();
         var lookupMap = lookupMapO.get();
         if (lookupMap.direction.from.equals("seed")) {
             return lookupMap.unmap(value);
@@ -140,23 +160,27 @@ public class Main implements Runnable {
             }
             return Optional.empty();
         }
-
     }
 
     private record LookupMap(Direction direction, List<MapEntry> entries) {
         public Long map(Long input) {
-            var ranges = entries.stream().map(e -> e.map(input)).filter(Optional::isPresent).findFirst();
+            var ranges = entries.stream()
+                    .map(e -> e.map(input))
+                    .filter(Optional::isPresent)
+                    .findFirst();
             return ranges.map(Optional::get).orElse(input);
         }
 
         public Long unmap(Long input) {
-            var ranges = entries.stream().map(e -> e.unmap(input)).filter(Optional::isPresent).findFirst();
+            var ranges = entries.stream()
+                    .map(e -> e.unmap(input))
+                    .filter(Optional::isPresent)
+                    .findFirst();
             return ranges.map(Optional::get).orElse(input);
         }
     }
 
-    private record Direction(String from, String to) {
-    }
+    private record Direction(String from, String to) {}
 
     private record SeedRange(Long from, Long range) {
         public boolean isInSeedRange(Long value) {

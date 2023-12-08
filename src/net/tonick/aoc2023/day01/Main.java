@@ -30,8 +30,27 @@ public class Main implements Runnable {
             Map.entry("eight", 8),
             Map.entry("8", 8),
             Map.entry("nine", 9),
-            Map.entry("9", 9)
-    );
+            Map.entry("9", 9));
+    /**
+     * Create an extractor with a filter that only allows digits from NUMBERS
+     */
+    private static final Function<String, Integer> extractOnlyByDigits = createExtractor("\\d");
+    /**
+     * Solution 1: Apply the 'extractOnlyByDigits' extractor to the input list and sum up the results
+     */
+    private static final Function<List<String>, Object> solution1 = input ->
+            input.stream().map(extractOnlyByDigits).mapToInt(Integer::intValue).sum();
+    /**
+     * Create an extractor with a filter that allows all values from NUMBERS
+     */
+    private static final Function<String, Integer> extractByDigitsAndNumberWords = createExtractor(".*");
+    /**
+     * Solution 2: Apply the 'extractByDigitsAndNumberWords' extractor to the input list and sum up the results
+     */
+    private static final Function<List<String>, Object> solution2 = input -> input.stream()
+            .map(extractByDigitsAndNumberWords)
+            .mapToInt(Integer::intValue)
+            .sum();
 
     /**
      * Creates an extractor that finds the positions of all keywords within a String
@@ -44,15 +63,12 @@ public class Main implements Runnable {
             var containedNumbers = NUMBERS.entrySet().stream()
                     .filter(number -> number.getKey().matches(filter))
                     .flatMap(number -> indicesOfAll(string, number.getKey()).stream()
-                            .map(index -> new Location(
-                                    number.getKey(),
-                                    number.getValue(),
-                                    index
-                            )))
+                            .map(index -> new Location(number.getKey(), number.getValue(), index)))
                     .sorted(Comparator.comparingInt(location -> location.position))
                     .toList();
 
-            return containedNumbers.getFirst().value() * 10 + containedNumbers.getLast().value();
+            return containedNumbers.getFirst().value() * 10
+                    + containedNumbers.getLast().value();
         };
     }
 
@@ -77,63 +93,20 @@ public class Main implements Runnable {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Create an extractor with a filter that only allows digits from NUMBERS
-     */
-    private static final Function<String, Integer> extractOnlyByDigits = createExtractor("\\d");
-
-    /**
-     * Create an extractor with a filter that allows all values from NUMBERS
-     */
-    private static final Function<String, Integer> extractByDigitsAndNumberWords = createExtractor(".*");
-
-    /**
-     * Solution 1: Apply the 'extractOnlyByDigits' extractor to the input list and sum up the results
-     */
-    private static final Function<List<String>, Object> solution1 = input -> input.stream()
-            .map(extractOnlyByDigits)
-            .mapToInt(Integer::intValue)
-            .sum();
-
-    /**
-     * Solution 2: Apply the 'extractByDigitsAndNumberWords' extractor to the input list and sum up the results
-     */
-    private static final Function<List<String>, Object> solution2 = input -> input.stream()
-            .map(extractByDigitsAndNumberWords)
-            .mapToInt(Integer::intValue)
-            .sum();
-
     public static void main(String... args) {
         new Main().run();
     }
 
     @Override
     public void run() {
-        Solver.solve(
-                InputFile.of(Main.class, "sample.txt"),
-                solution1,
-                Optional.of(142)
-        );
+        Solver.solve(InputFile.of(Main.class, "sample.txt"), solution1, Optional.of(142));
 
-        Solver.solve(
-                InputFile.of(Main.class, "input.txt"),
-                solution1,
-                Optional.of(54159)
-        );
+        Solver.solve(InputFile.of(Main.class, "input.txt"), solution1, Optional.of(54159));
 
-        Solver.solve(
-                InputFile.of(Main.class, "sample2.txt"),
-                solution2,
-                Optional.of(281)
-        );
+        Solver.solve(InputFile.of(Main.class, "sample2.txt"), solution2, Optional.of(281));
 
-        Solver.solve(
-                InputFile.of(Main.class, "input.txt"),
-                solution2,
-                Optional.of(53866)
-        );
+        Solver.solve(InputFile.of(Main.class, "input.txt"), solution2, Optional.of(53866));
     }
 
-    record Location(String name, Integer value, Integer position) {
-    }
+    record Location(String name, Integer value, Integer position) {}
 }

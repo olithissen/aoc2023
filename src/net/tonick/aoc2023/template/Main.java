@@ -17,28 +17,12 @@ public class Main implements Runnable {
 
     @Override
     public void run() {
-        Solver.solve(
-                InputFile.of(Main.class, "sample.txt"),
-                solution1,
-                Optional.empty()
-        );
+        Solver.solve(InputFile.of(Main.class, "sample.txt"), solution1, Optional.empty());
 
-        Solver.solve(
-                InputFile.of(Main.class, "input.txt"),
-                solution1,
-                Optional.empty()
-        );
+        Solver.solve(InputFile.of(Main.class, "input.txt"), solution1, Optional.empty());
 
-        Solver.solve(
-                InputFile.of(Main.class, "sample.txt"),
-                solution2,
-                Optional.empty()
-        );
+        Solver.solve(InputFile.of(Main.class, "sample.txt"), solution2, Optional.empty());
 
-        Solver.solve(
-                InputFile.of(Main.class, "input.txt"),
-                solution2,
-                Optional.empty()
-        );
+        Solver.solve(InputFile.of(Main.class, "input.txt"), solution2, Optional.empty());
     }
 }

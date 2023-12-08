@@ -21,7 +21,8 @@ public class Main implements Runnable {
     /**
      * Gets numbers from the input line with replacing with removing all whitespaces beforehand
      */
-    private static final Function<String, List<Long>> getNumbersFromTableJoined = getGetNumbers(s -> s.replaceAll("\\s", ""));
+    private static final Function<String, List<Long>> getNumbersFromTableJoined =
+            getGetNumbers(s -> s.replaceAll("\\s", ""));
 
     /**
      * Gets all races using split numbers
@@ -36,7 +37,8 @@ public class Main implements Runnable {
     /**
      * A BiFunction that calculates the race distance based on hold time and maximum race time
      */
-    private static final BiFunction<Long, Long, Long> distance = (holdTime, raceTime) -> holdTime * (raceTime - holdTime);
+    private static final BiFunction<Long, Long, Long> distance =
+            (holdTime, raceTime) -> holdTime * (raceTime - holdTime);
 
     /**
      * A Function that gets the list of winning scenarios for each race
@@ -46,12 +48,10 @@ public class Main implements Runnable {
             .filter(distance -> distance > race.distance)
             .boxed()
             .toList();
-
     /**
      * A Reducer for calculating a product
      */
     private static final IntBinaryOperator product = (acc, cur) -> acc > 0 ? acc * cur : cur;
-
     /**
      * Solution 1
      */
@@ -59,7 +59,6 @@ public class Main implements Runnable {
         var races = getRacesSplit.apply(input);
         return races.stream().map(distances).mapToInt(List::size).reduce(product);
     };
-
     /**
      * Solution 2
      */
@@ -78,10 +77,9 @@ public class Main implements Runnable {
         return input -> {
             var s = input.stream().map(tableReader).toList();
 
-            return IntStream.range(0, s.get(0).size()).mapToObj(i -> new Race(
-                    s.get(0).get(i),
-                    s.get(1).get(i)
-            )).toList();
+            return IntStream.range(0, s.get(0).size())
+                    .mapToObj(i -> new Race(s.get(0).get(i), s.get(1).get(i)))
+                    .toList();
         };
     }
 
@@ -95,7 +93,10 @@ public class Main implements Runnable {
         return line -> {
             var numbersPart = line.split(":")[1];
             numbersPart = linePreprocessor.apply(numbersPart);
-            return Arrays.stream(numbersPart.split("\\s+")).filter(element -> !element.isEmpty()).map(Long::parseLong).toList();
+            return Arrays.stream(numbersPart.split("\\s+"))
+                    .filter(element -> !element.isEmpty())
+                    .map(Long::parseLong)
+                    .toList();
         };
     }
 
@@ -114,6 +115,5 @@ public class Main implements Runnable {
         Solver.solve(InputFile.of(Main.class, "input.txt"), solution2, Optional.of(35865985));
     }
 
-    private record Race(Long time, Long distance) {
-    }
+    private record Race(Long time, Long distance) {}
 }
