@@ -53,7 +53,9 @@ public class Main implements Runnable {
         return input -> input.stream()
                 .map(parseLine)
                 .map(solveLine)
-                .map(s -> s.reversed().stream().reduce(reducer).orElse(List.of()))
+                .map(s -> s.reversed().stream()
+                        .reduce(reducer)
+                        .orElse(List.of()))
                 .mapToInt(resultPicker)
                 .sum();
     }
