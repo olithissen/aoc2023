@@ -71,9 +71,11 @@ public class Main implements Runnable {
      * A reducer that calculates the missing value based on the last values of List A and List A+1
      *
      * <pre>
-     * a: 0, 3, 6, 9, 12, 15
+     * a: 0, 3, 6, 9, 12, *15*
      * b: 3, 3, 3, 3, 3, *3*
-     * -> 0, 3, 6, 9, 12, 15, 18
+     *
+     * a[n] + b[n]
+     * -> 0, 3, 6, 9, 12, 15, *18*
      * </pre>
      *
      */
@@ -87,8 +89,10 @@ public class Main implements Runnable {
      * A reducer that calculates the missing value based on the first values of List A and List A+1
      *
      * <pre>
-     * a: 0, 3, 6, 9, 12, 15
+     * a: *0*, 3, 6, 9, 12, 15
      * b: *3*, 3, 3, 3, 3, 3
+     *
+     * a[0] - b[0]
      * -> -3, 0, 3, 6, 9, 12, 15
      * </pre>
      *
