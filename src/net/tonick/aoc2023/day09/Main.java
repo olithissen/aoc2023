@@ -11,6 +11,10 @@ import java.util.function.ToIntFunction;
 public class Main implements Runnable {
     /**
      * Takes one input line and return individual Integers as List.
+     *
+     * <pre>
+     *     "0 3 6 9 12 15" -> 0, 3, 6, 9, 12, 15
+     * </pre>
      */
     private static final Function<String, List<Integer>> parseLine = line -> Arrays.stream(line.split(" "))
             .filter(s -> !s.isEmpty())
@@ -20,6 +24,16 @@ public class Main implements Runnable {
     /**
      * A Function to calculate differences between numbers. It takes a List of Integers and uses reduce to
      * create a new List representing the differences between each consecutive number
+     *
+     * <pre>
+     *     0, 3, 6, 9, 12, 15
+     *      3 -  0 = 3
+     *      6 -  3 = 3
+     *      9 -  6 = 3
+     *     12 -  9 = 3
+     *     15 - 12 = 3
+     *     -> 3, 3, 3, 3, 3
+     * </pre>
      */
     private static final Function<List<Integer>, List<Integer>> createDifferences = input -> {
         List<Integer> differences = new ArrayList<>();
@@ -35,6 +49,13 @@ public class Main implements Runnable {
     /**
      * A solver for a single Line. It applies the createDifferences Function to add further Lines in depth, until
      * all Items of the last list are 0. It returns the full List of Lists.
+     *
+     * <pre>
+     *     0, 3, 6, 9, 12, 15
+     *     -> 0, 3, 6, 9, 12, 15
+     *        3, 3, 3, 3, 3
+     *        0, 0, 0, 0
+     * </pre>
      */
     private static final Function<List<Integer>, List<List<Integer>>> solveLine = input -> {
         List<List<Integer>> depth = new ArrayList<>();
@@ -48,6 +69,13 @@ public class Main implements Runnable {
 
     /**
      * A reducer that calculates the missing value based on the last values of List A and List A+1
+     *
+     * <pre>
+     * a: 0, 3, 6, 9, 12, 15
+     * b: 3, 3, 3, 3, 3, *3*
+     * -> 0, 3, 6, 9, 12, 15, 18
+     * </pre>
+     *
      */
     private static final BinaryOperator<List<Integer>> reduceToLastItem = (a, b) -> {
         List<Integer> list = new ArrayList<>(b);
@@ -57,6 +85,13 @@ public class Main implements Runnable {
 
     /**
      * A reducer that calculates the missing value based on the first values of List A and List A+1
+     *
+     * <pre>
+     * a: 0, 3, 6, 9, 12, 15
+     * b: *3*, 3, 3, 3, 3, 3
+     * -> -3, 0, 3, 6, 9, 12, 15
+     * </pre>
+     *
      */
     private static final BinaryOperator<List<Integer>> reduceToFirstItem = (a, b) -> {
         List<Integer> list = new ArrayList<>();
