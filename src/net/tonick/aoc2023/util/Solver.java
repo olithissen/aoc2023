@@ -9,22 +9,22 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public abstract class Solver {
-    public static Result solve(Supplier<List<String>> inputData,
-                               Function<List<String>, Object> algorithm,
-                               Optional<Object> expectedResult
-    ) {
+    public static Result solve(
+            Supplier<List<String>> inputData,
+            Function<List<String>, Object> algorithm,
+            Optional<Object> expectedResult) {
         return solve(inputData, algorithm, expectedResult, System.out::println);
     }
 
-    public static Result solve(Supplier<List<String>> inputData,
-                               Function<List<String>, Object> algorithm,
-                               Optional<Object> expectedResult,
-                               Consumer<Object> writer) {
+    public static Result solve(
+            Supplier<List<String>> inputData,
+            Function<List<String>, Object> algorithm,
+            Optional<Object> expectedResult,
+            Consumer<Object> writer) {
 
         var start = Instant.now();
         Object algorithmResult = algorithm.apply(inputData.get());
         var executionTime = Duration.between(start, Instant.now()).toNanos() * 0.000001;
-
 
         Result result = new Result(
                 expectedResult.orElse(null),
@@ -37,6 +37,5 @@ public abstract class Solver {
         return result;
     }
 
-    public record Result(Object expected, Object actual, boolean success, double executionTime) {
-    }
+    public record Result(Object expected, Object actual, boolean success, double executionTime) {}
 }

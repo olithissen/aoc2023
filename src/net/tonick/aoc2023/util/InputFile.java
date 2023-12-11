@@ -18,7 +18,8 @@ public class InputFile implements Supplier<List<String>> {
 
     public static InputFile of(Class clazz, String name) {
         try {
-            return new InputFile(Path.of(Objects.requireNonNull(clazz.getResource(name)).toURI()));
+            return new InputFile(
+                    Path.of(Objects.requireNonNull(clazz.getResource(name)).toURI()));
         } catch (URISyntaxException e) {
             return null;
         }
